@@ -1,7 +1,7 @@
 # Cliq-MsgNet-Integration
 
 ## Contacts
-Emmit (S&A) - MVP Developer
+Emmit (S&A) - MVP Developer  
 Ben Lange - MessageMedia contact
 
 ## Purpose
@@ -11,7 +11,7 @@ When deployed to an Azure Function, this code will call the Cliq web service(s) 
 
 
 ## Azure Resource(s)
-Azure Function (Primary) - Executed at a pre-set time each day (7am)
+Azure Function (Primary) - Executed at a pre-set time each day (7am)  
 Azure File Storage - Store CSV files for import into SIEM
 
 ## Other Resources
