@@ -8,7 +8,23 @@ module.exports = async function (context, req) {
        6 - Send Admin group a status message (ie no sms sent + email of users/or nightly API call was not successful)
     */
     context.log('JavaScript HTTP trigger function processed a request.');
+/*
+    var Request = require("request"); 
 
+    Request.post({
+        "headers": { "content-type": "application/json" },
+        "url": "http://httpbin.org/post", // <-- Update url
+        "body": JSON.stringify({
+            "firstname": "Nic",
+            "lastname": "Raboy"
+        })
+    }, (error, response, body) => {
+        if(error) {
+            return console.dir(error);
+        }
+        console.dir(JSON.parse(body));
+    });
+*/
     if (req.query.name || (req.body && req.body.name)) {
         context.res = {
             // status: 200, /* Defaults to 200 */
