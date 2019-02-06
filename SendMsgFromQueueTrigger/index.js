@@ -15,7 +15,16 @@ module.exports = async function (context, myQueueItem) {
       if(error) {
         return console.dir(error);
     }
-    context.log(response);
+    context.log("[" + body + "]" + smsMsg);
+
+ /*
+ From Postman
+
+ Auth Key must be invalid
+ Response => 401 Unauthorized
+ Body =>
+    {"message": "Authorization has been denied for this request." }
+*/
 
   });      
 };
