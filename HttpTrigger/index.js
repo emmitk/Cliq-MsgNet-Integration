@@ -20,7 +20,7 @@ module.exports = async function (context, req) {
         
         // try downloading an invalid url
         const lv_body = await callCliqWSPost("http://test.com")
- context.res = {
+        context.res = {
             // status: 200, 
             body: "HTML:" + html + lv_body
         };
@@ -37,7 +37,7 @@ module.exports = async function (context, req) {
 
 
 // wrap a request in an promise
-function callCliqWS(url) {  
+  function callCliqWS(url) {  
     return new Promise((resolve, reject) => {
 
 
@@ -49,28 +49,27 @@ function callCliqWS(url) {
             resolve(body);
         });
     });
-}
+  }
 
 
-function callCliqWSPost(url) {  
-  return new Promise((resolve, reject) => {
-    console.log('Pre PostCall');
-    request.post({
+  function callCliqWSPost(url) {  
+    return new Promise((resolve, reject) => {
+      console.log('Pre PostCall');
+      request.post({
         "headers": { "content-type": "application/json" },
         "url": "http://httpbin.org/post", // <-- Update url
         "body": JSON.stringify({
             "firstname": "Nic",
             "lastname": "Raboy"
         }) 
-    }, (error, response, body) => {
+      }, (error, response, body) => {
         if(error) {
             return console.dir(error);
         }
         resolve(body);
         console.dir(JSON.parse(body));
-    }); 
-    console.log('Post PostCall');
-  });
-}
-
+      }); 
+      console.log('Post PostCall');
+    });
+  }
 };
