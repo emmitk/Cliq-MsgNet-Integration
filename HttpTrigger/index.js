@@ -10,41 +10,33 @@ module.exports = async function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
 
     var request = require("request"); 
+    var lv_body="init";
+    try {
+        console.log('Pre work');
+        const html = await callCliqWS('https://microsoft.com')
+        console.log('SHOULD WORK:');
+        console.log(html);
 
-
-   // getCliqData();
-
-    request.post({
-        "headers": { "content-type": "application/json" },
-        "url": "http://httpbin.org/post", // <-- Update url
-        "body": JSON.stringify({
-            "firstname": "Nic",
-            "lastname": "Raboy"
-        })
-    }, (error, response, body) => {
-        if(error) {
-            return console.dir(error);
-        }
-        console.dir(JSON.parse(body));
-    }); 
-
-/*    if (req.query.name || (req.body && req.body.name)) {
-        context.res = {
+        
+        // try downloading an invalid url
+        const lv_body = await callCliqWSPost("http://test.com")
+ context.res = {
             // status: 200, 
-            body: "Hello " + (req.query.name || req.body.name)
+            body: "HTML:" + html + lv_body
         };
-    }
-    else {
+    } catch (error) {
+        console.error('ERROR:');
+        console.error(error);
         context.res = {
             status: 400,
-            body: "Please pass a name on the query string or in the request body"
-        };
+            body: "Something bad happened!!"
+        };        
     }
-*/    
-};
+    context.log('Post Call.');
+
+
 
 // wrap a request in an promise
-/*
 function callCliqWS(url) {  
     return new Promise((resolve, reject) => {
 
@@ -58,38 +50,27 @@ function callCliqWS(url) {
         });
     });
 }
-*/
-/*    Request.post({
+
+
+function callCliqWSPost(url) {  
+  return new Promise((resolve, reject) => {
+    console.log('Pre PostCall');
+    request.post({
         "headers": { "content-type": "application/json" },
         "url": "http://httpbin.org/post", // <-- Update url
         "body": JSON.stringify({
             "firstname": "Nic",
             "lastname": "Raboy"
-        })
+        }) 
     }, (error, response, body) => {
         if(error) {
             return console.dir(error);
         }
+        resolve(body);
         console.dir(JSON.parse(body));
     }); 
-*/
-
-
-// now to program the "usual" way
-// all you need to do is use async functions and await
-// for functions returning promises
-/*
-async function getCliqData() {
-    try {
-        const html = await callCliqWS('https://microsoft.com')
-        console.log('SHOULD WORK:');
-        console.log(html);
-
-        // try downloading an invalid url
-        await callCliqWS('http://      .com')
-    } catch (error) {
-        console.error('ERROR:');
-        console.error(error);
-    }
+    console.log('Post PostCall');
+  });
 }
-*/
+
+};
