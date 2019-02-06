@@ -24,7 +24,7 @@ module.exports = async function (context, req) {
             // status: 200, 
             body: "HTML:" + html + lv_body
         };
-        context.bindings.outputQueueItem = "HTML:" + html + lv_body; 
+        context.bindings.outputQueueItem = "HTML:" ; 
 /*        context.outputQueueItem = {
 
         };*/
