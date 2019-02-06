@@ -12,7 +12,7 @@ module.exports = async function (context, req) {
     var request = require("request"); 
 
 
-    getCliqData();
+   // getCliqData();
 
     request.post({
         "headers": { "content-type": "application/json" },
