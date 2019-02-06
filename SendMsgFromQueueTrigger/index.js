@@ -15,5 +15,7 @@ module.exports = async function (context, myQueueItem) {
       if(error) {
         return console.dir(error);
     }
+    context.log(response);
+
   });      
 };
