@@ -1,0 +1,34 @@
+{
+  "disabled": false,
+  "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "get",
+        "post"
+      ]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "type": "queue",
+      "name": "outputQueueItem",
+      "queueName": "message-queue",
+      "connection": "AzureWebJobsStorage",
+      "direction": "out"
+    },
+    {
+      "type": "table",
+      "name": "outputTblStatus",
+      "tableName": "tblStatus",
+      "connection": "AzureWebJobsStorage",
+      "direction": "out"
+    }    
+  ]
+}
