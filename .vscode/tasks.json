@@ -13,7 +13,7 @@
         }
       },
       "dependsOn": "installExtensions"
-    },
+   },
     {
       "label": "installExtensions",
       "command": "func extensions install",
