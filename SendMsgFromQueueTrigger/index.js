@@ -13,6 +13,17 @@ module.exports = async function (context, myQueueItem) {
       })
     }, (error, response, body) => {
       if(error) {
+        context.log("error occured");
+
+        context.bindings.outputTblStatus = [
+          {
+            PartitionKey: "Status",
+            RowKey: "Send[0]",
+            status: "Error Occurred",
+            run_date: "07/02/2019"
+          }
+        ];
+
         return console.dir(error);
     }
     let lv_msg = "[" + body + "]" + smsMsg;
