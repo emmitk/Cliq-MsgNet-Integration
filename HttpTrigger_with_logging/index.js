@@ -36,7 +36,7 @@ module.exports = async function (context, req) {
             //"some string"
         ]
 
-        context.bindings.tblStatus = [
+        context.bindings.outputTblStatus = [
           {
             PartitionKey: "Status",
             RowKey: "0",
