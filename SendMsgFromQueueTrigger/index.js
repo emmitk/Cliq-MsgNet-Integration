@@ -5,7 +5,10 @@ module.exports = async function (context, myQueueItem) {
 
     const lv_body = await callMessagenetPost();
     console.log(lv_body);
-    var lv_kv = Environment.GetEnvironmentVariable("MessageNetAPIKey")
+    
+    var lv_kv = GetEnvironmentVariable("MessageNetAPIKey")
+    console.log(lv_kv);
+
     context.bindings.outputTblStatus = [
       {
         PartitionKey: "Status",
@@ -21,6 +24,12 @@ module.exports = async function (context, myQueueItem) {
       }
     ];
 
+
+    
+function GetEnvironmentVariable(name)
+{
+    return name + ": " + process.env[name];
+}
 /*    smsRequest.post({
       "headers": { "content-type": "application/json", "Authorization": "Basic ZW1taXQua2FkYXlpZmNpOnNtc1Bhc3Mx", "Accept": "application/json" },
       "url": "http://api.messagenet.com.au/v2/message/simple_send",
