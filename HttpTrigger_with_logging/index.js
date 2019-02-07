@@ -24,10 +24,17 @@ module.exports = async function (context, req) {
             // status: 200, 
             body: "HTML:" + html + lv_body
         };
-        context.bindings.outputQueueItem = "HTML:" ; 
-/*        context.outputQueueItem = {
-
-        };*/
+//        context.bindings.outputQueueItem = "HTML:" ; // Also works with strings
+        context.bindings.outputQueueItem = [
+            {
+                "type":"sms",
+                "number": "61433111696",
+                "sender": "Emmit",
+                "subject": "Subject heading",
+                "msg": "Sent from HttpTrigger"
+            },
+            "Azure Functions are awesome!"
+        ]
     } catch (error) {
         console.error('ERROR:');
         console.error(error);
@@ -37,6 +44,7 @@ module.exports = async function (context, req) {
         };        
     }
     context.log('Post Call.');
+    context.done();        
 
 
 
