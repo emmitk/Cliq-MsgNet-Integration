@@ -17,6 +17,16 @@ module.exports = async function (context, myQueueItem) {
     }
     context.log("[" + body + "]" + smsMsg);
 
+    context.bindings.outputTblStatus = [
+      {
+        PartitionKey: "Status",
+        RowKey: "Send[0]",
+        status: "[" + body + "]" + smsMsg,
+        run_date: "07/02/2019"
+      }
+    ];
+    context.done();
+
  /*
  From Postman
 

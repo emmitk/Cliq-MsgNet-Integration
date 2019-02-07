@@ -7,6 +7,13 @@
       "direction": "in",
       "queueName": "message-queue",
       "connection": "AzureWebJobsStorage"
-    }
+    },
+    {
+      "type": "table",
+      "name": "outputTblStatus",
+      "tableName": "tblStatus",
+      "connection": "AzureWebJobsStorage",
+      "direction": "out"
+    }       
   ]
 }
