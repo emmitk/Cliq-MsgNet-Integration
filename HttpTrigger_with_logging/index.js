@@ -32,9 +32,36 @@ module.exports = async function (context, req) {
                 "sender": "Emmit",
                 "subject": "Subject heading",
                 "msg": "Sent from HttpTrigger"
-            },
-            "Azure Functions are awesome!"
+            }//,
+            //"some string"
         ]
+
+        context.bindings.tblStatus = [
+          {
+            PartitionKey: "Status",
+            RowKey: "0",
+            status: "Started",
+            run_date: "07/02/2019"
+          },
+          {
+            PartitionKey: "Status",
+            RowKey: "1",
+            status: "Finished",
+            run_date: "07/02/2019"
+          }
+        ];
+
+
+/*
+        context.bindings.tableBinding = [];
+        for (var i = 1; i < 10; i++) {
+            context.bindings.tableBinding.push({
+                PartitionKey: "Status",
+                RowKey: i.toString(),
+                Name: "Name " + i
+            });
+        }        
+*/        
     } catch (error) {
         console.error('ERROR:');
         console.error(error);
