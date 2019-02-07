@@ -5,11 +5,18 @@ module.exports = async function (context, myQueueItem) {
 
     const lv_body = await callMessagenetPost();
     console.log(lv_body);
+    var lv_kv = Environment.GetEnvironmentVariable("MessageNetAPIKey")
     context.bindings.outputTblStatus = [
       {
         PartitionKey: "Status",
         RowKey: "Send[1]",
-        status: "Success:" + body,
+        status: "Success:" + lv_body,
+        run_date: "07/02/2019"
+      },
+      {
+        PartitionKey: "Status",
+        RowKey: "KeyVaultValue",
+        status: "Success:" + lv_kv,
         run_date: "07/02/2019"
       }
     ];
