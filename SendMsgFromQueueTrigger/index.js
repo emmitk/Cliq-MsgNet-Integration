@@ -15,16 +15,24 @@ module.exports = async function (context, myQueueItem) {
       if(error) {
         return console.dir(error);
     }
-    context.log("[" + body + "]" + smsMsg);
+    let lv_msg = "[" + body + "]" + smsMsg;
+    context.log(lv_msg);
 
     context.bindings.outputTblStatus = [
       {
         PartitionKey: "Status",
         RowKey: "Send[0]",
-        status: "[" + body + "]" + smsMsg,
+        status: lv_msg,
         run_date: "07/02/2019"
       }
     ];
+    context.outputTblStatus = [{
+      PartitionKey: "Status",
+      RowKey: "Send[0]",
+      status: lv_msg,
+      run_date: "07/02/2019"
+    }];
+
     context.done();
 
  /*
