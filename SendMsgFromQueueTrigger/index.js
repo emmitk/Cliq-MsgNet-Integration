@@ -1,13 +1,15 @@
 module.exports = async function (context, myQueueItem) {
+    myQueueItem = "testmessage"; //for debug
     context.log('JavaScript queue trigger function processed work item', myQueueItem);
     var smsRequest = require("request");
     var smsMsg = "Welcome to Ausgrid " + myQueueItem;
 
+    var lv_kv = GetEnvironmentVariable("MessageNetAPIKey")
+    console.log(lv_kv);
+
     const lv_body = await callMessagenetPost();
     console.log(lv_body);
     
-    var lv_kv = GetEnvironmentVariable("MessageNetAPIKey")
-    console.log(lv_kv);
 
     context.bindings.outputTblStatus = [
       {
@@ -21,7 +23,8 @@ module.exports = async function (context, myQueueItem) {
     
 function GetEnvironmentVariable(name)
 {
-    return name + ": " + process.env[name];
+//    return name + ": " + process.env[name];
+    return process.env[name];
 }
 
  /*
