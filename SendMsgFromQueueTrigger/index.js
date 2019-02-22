@@ -38,7 +38,7 @@ function GetEnvironmentVariable(name)
     return new Promise((resolve, reject) => {
       console.log('Pre PostCall');
       let lv_msgnet_key = GetEnvironmentVariable("MessageNetAPIKey")
-
+      console.log("Message key:" + lv_msgnet_key);
       smsRequest.post({
         "headers": { "content-type": "application/json", "Authorization": "Basic " + lv_msgnet_key, "Accept": "application/json" },
         "url": "http://api.messagenet.com.au/v2/message/simple_send",
