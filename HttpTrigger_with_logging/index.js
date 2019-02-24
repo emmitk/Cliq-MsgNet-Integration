@@ -11,11 +11,14 @@ module.exports = async function (context, req) {
 
     var request = require("request"); 
     var lv_body="init";
+
+    var lv_cliqCert = process.env["CliqCert"];
+    
     try {
-        console.log('Pre work');
+        context.log('Pre work');
         const html = await callCliqWS('https://microsoft.com')
-        console.log('SHOULD WORK:');
-        console.log(html);
+        context.log('SHOULD WORK:');
+        context.log(html);
 
         
         // try downloading an invalid url
