@@ -12,10 +12,10 @@ module.exports = async function (context, req) {
     var request = require("request"); 
     var lv_body="init";
     try {
-        console.log('Pre work');
+        context.log('Pre work');
         const html = await callCliqWS('https://microsoft.com')
-        console.log('SHOULD WORK:');
-        console.log(html);
+        context.log('SHOULD WORK:');
+        context.log(html);
 
         
         // try downloading an invalid url
@@ -25,29 +25,31 @@ module.exports = async function (context, req) {
             body: "HTML:" + html + lv_body
         };
 //        context.bindings.outputQueueItem = "HTML:" ; // Also works with strings
+        var l_datetime = new Date.now();1
         context.bindings.outputQueueItem = [
             {
                 "type":"sms",
                 "number": "61433111696",
                 "sender": "Emmit",
                 "subject": "Subject heading",
-                "msg": "Sent from HttpTrigger"
+                "msg": "Test Message from Azure" + l_datetime.toString()
             }//,
             //"some string"
         ]
+        var l_datetime = new Date.now();1
 
         context.bindings.outputTblStatus = [
           {
             PartitionKey: "Status",
-            RowKey: "0",
+            RowKey: l_datetime.toString(),
             status: "Started",
-            run_date: "07/02/2019"
+            run_date: getDate()
           },
           {
             PartitionKey: "Status",
-            RowKey: "1",
+            RowKey: l_datetime.toString(),
             status: "Finished",
-            run_date: "07/02/2019"
+            run_date: getDate()
           }
         ];
 
@@ -63,8 +65,8 @@ module.exports = async function (context, req) {
         }        
 */        
     } catch (error) {
-        console.error('ERROR:');
-        console.error(error);
+        context.error('ERROR:');
+        context.error(error);
         context.res = {
             status: 400,
             body: "Something bad happened!!"
@@ -90,10 +92,26 @@ module.exports = async function (context, req) {
     });
   }
 
-
+  function getDate()
+  {
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth() + 1; //January is 0!
+  
+  var yyyy = today.getFullYear();
+  if (dd < 10) {
+    dd = '0' + dd;
+  } 
+  if (mm < 10) {
+    mm = '0' + mm;
+  } 
+  var today = dd + '/' + mm + '/' + yyyy;
+  return today;
+  } 
+  
   function callCliqWSPost(url) {  
     return new Promise((resolve, reject) => {
-      console.log('Pre PostCall');
+      context.log('Pre PostCall');
       request.post({
         "headers": { "content-type": "application/json" },
         "url": "http://httpbin.org/post", // <-- Update url
@@ -103,12 +121,12 @@ module.exports = async function (context, req) {
         }) 
       }, (error, response, body) => {
         if(error) {
-            return console.dir(error);
+            return context.dir(error);
         }
         resolve(body);
-        console.dir(JSON.parse(body));
+        context.dir(JSON.parse(body));
       }); 
-      console.log('Post PostCall');
+      context.log('Post PostCall');
     });
   }
 };
