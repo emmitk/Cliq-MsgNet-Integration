@@ -11,6 +11,9 @@ module.exports = async function (context, req) {
 
     var request = require("request"); 
     var lv_body="init";
+
+    var lv_cliqCert = process.env["CliqCert"];
+    
     try {
         context.log('Pre work');
         const html = await callCliqWS('https://microsoft.com')
