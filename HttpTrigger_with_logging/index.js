@@ -28,7 +28,7 @@ module.exports = async function (context, req) {
             body: "HTML:" + html + lv_body
         };
 //        context.bindings.outputQueueItem = "HTML:" ; // Also works with strings
-        var l_datetime = new Date.now();1
+        var l_datetime = new Date.now();
         context.bindings.outputQueueItem = [
             {
                 "type":"sms",
@@ -39,7 +39,6 @@ module.exports = async function (context, req) {
             }//,
             //"some string"
         ]
-        var l_datetime = new Date.now();1
 
         context.bindings.outputTblStatus = [
           {
