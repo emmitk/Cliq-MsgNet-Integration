@@ -28,14 +28,14 @@ module.exports = async function (context, req) {
             body: "HTML:" + html + lv_body
         };
 //        context.bindings.outputQueueItem = "HTML:" ; // Also works with strings
-        var l_datetime = new Date.now();
+        var l_datetime = Date.now();
         context.bindings.outputQueueItem = [
             {
                 "type":"sms",
                 "number": "61433111696",
                 "sender": "Emmit",
                 "subject": "Subject heading",
-                "msg": "Test Message from Azure" + l_datetime.toString()
+                "msg": "Test Message from Azure " + l_datetime.toString()
             }//,
             //"some string"
         ]
