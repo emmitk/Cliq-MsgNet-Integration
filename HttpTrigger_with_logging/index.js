@@ -13,7 +13,15 @@ module.exports = async function (context, req) {
     var lv_body="init";
 
     var lv_cliqCert = process.env["CliqCert"];
-    
+/*
+create multiple objects
+          {
+            PartitionKey: "Status",
+            RowKey: l_datetime,
+            status: "Started",
+            run_date: getDate()
+          }
+*/
     try {
         context.log('Pre work');
         const html = await callCliqWS('https://microsoft.com')
@@ -28,14 +36,15 @@ module.exports = async function (context, req) {
             body: "HTML:" + html + lv_body
         };
 //        context.bindings.outputQueueItem = "HTML:" ; // Also works with strings
-        var l_datetime = Date.now();
+        var l_datetime = Date.now().toString();
+        context.log("l_datetime = " + l_datetime) ;
         context.bindings.outputQueueItem = [
             {
                 "type":"sms",
                 "number": "61433111696",
                 "sender": "Emmit",
                 "subject": "Subject heading",
-                "msg": "Test Message from Azure " + l_datetime.toString()
+                "msg": "Test Message from Azure " // + l_datetime
             }//,
             //"some string"
         ]
@@ -43,13 +52,13 @@ module.exports = async function (context, req) {
         context.bindings.outputTblStatus = [
           {
             PartitionKey: "Status",
-            RowKey: l_datetime.toString(),
+            RowKey: l_datetime,
             status: "Started",
             run_date: getDate()
           },
           {
             PartitionKey: "Status",
-            RowKey: l_datetime.toString(),
+            RowKey: l_datetime,
             status: "Finished",
             run_date: getDate()
           }
