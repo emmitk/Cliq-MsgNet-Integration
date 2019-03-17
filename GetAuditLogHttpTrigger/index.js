@@ -18,7 +18,7 @@ module.exports = async function (context, req) {
     var lv_body="init";
     var pfxFilePath = path.resolve(__dirname, 'ssl/2-000095399-WebService.pfx');
     var mypfx = fs.readFileSync(pfxFilePath);
-    var listUsersJSON;
+    var auditLogJSON;
     var gCounts = {
       total:0,
       active:0,
@@ -33,10 +33,11 @@ module.exports = async function (context, req) {
         context.log(auditLog);
   
         //Convert output to JSON
-        xml2js.parseString(listUsers, function (err, result) {
+        xml2js.parseString(auditLog, function (err, result) {
           if (err) { context.log(err)};
-          listUsersJSON = result;
+          auditLogJSON = result;
         });
+        context.log(JSON.stringify(auditLogJSON));
  /* 
         //Should search for this rather than use indexes in case the schema changes
         const arrPersons = listUsersJSON["S:Envelope"]["S:Body"][0]["ns4:getPersonsResponse"][0]["person"];
