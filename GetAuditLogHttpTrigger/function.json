@@ -15,6 +15,13 @@
       "type": "http",
       "direction": "out",
       "name": "res"
-    }
+    },
+    {
+      "type": "table",
+      "name": "outputTblStatus",
+      "tableName": "tblStatus",
+      "connection": "AzureWebJobsStorage",
+      "direction": "out"
+    } 
   ]
 }
