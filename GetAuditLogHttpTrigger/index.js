@@ -7,7 +7,6 @@ module.exports = async function (context, req) {
        5 - Keep logs of all messages for audit purposes
        6 - Send Admin group a status message (ie no sms sent + email of users/or nightly API call was not successful)
     */
-    context.log('JavaScript HTTP trigger function processed a request.');
   
     var request = require("request"); 
     var fs = require('fs')
@@ -23,12 +22,13 @@ module.exports = async function (context, req) {
       total:0,
       active:0,
       expiring:0
-      };
+    };
   
     var lv_cliqCert = process.env["CliqCert"];
     try {
   //      const html = await callCliqWS('https://abloycwm001.assaabloy.net/CLIQWebManager/ws/query/v2/?wsdl');
   //      const html = await callCliqWS('https://www.microsoft.com');
+        context.log("Pre call");
         const auditLog = await callCliqWSPost('https://abloycwm001.assaabloy.net/CLIQWebManager/ws/query/v2/');
         context.log(auditLog);
   
@@ -121,7 +121,7 @@ module.exports = async function (context, req) {
     }
     context.log('Post Call.');
     context.done();        
-  return;
+
   
   // wrap a request in an promise
   function callCliqWS(url) {  
@@ -150,12 +150,12 @@ module.exports = async function (context, req) {
   function callCliqWSPost(url) {  
 
     let envelope = `
-      <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v2="http://cliq.shared.assaabloy.com/ws/query/v2/">'
+      <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v2="http://cliq.shared.assaabloy.com/ws/query/v2/">
        <soapenv:Header/>
         <soapenv:Body>
          <v2:getAuditTrails>
              <importDateInterval>
-             <from>2018-01-01T00:00+08:00</from>
+             <from>2018-04-01T00:00+08:00</from>
              <!--Optional:-->
              <to>2019-03-01T00:00+08:00</to>
              <!--You may enter ANY elements at this point-->
@@ -169,6 +169,7 @@ module.exports = async function (context, req) {
          </v2:getAuditTrails>
         </soapenv:Body>
       </soapenv:Envelope>`;
+
     
     var options = {     
       method: 'POST',
@@ -216,4 +217,3 @@ module.exports = async function (context, req) {
   
   
   };
-  
