@@ -61,7 +61,7 @@ if (lv_body_json["StatusCode"] == 200)
       RowKey: lv_rowKey,
       MessageDate: getDate(),
       MessageStatus: lv_body_json["StatusCode"] + "-" + lv_body_json["Status"],
-      SendStatus:  lv_body_json["Data"]["Message"]["Status"],
+      SendStatus:  lv_body_json["Status"],
       MessageId: lv_body_json["Data"]["Message"]["MessageId"],
       TrackingId: lv_body_json["Data"]["Message"]["TrackingId"],
       MessageLog: lv_body,
