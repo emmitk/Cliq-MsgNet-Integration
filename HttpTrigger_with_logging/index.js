@@ -12,7 +12,6 @@ module.exports = async function (context, req) {
   var request = require("request"); 
   var fs = require('fs')
     , path = require('path');
-<<<<<<< HEAD
   var xml2js = require('xml2js');
     
 
@@ -60,30 +59,6 @@ module.exports = async function (context, req) {
       var l_datetime = Date.now().toString();
       context.log("l_datetime = " + l_datetime) ;
 /*      context.bindings.outputQueueItem = [
-=======
-    
-
-  var lv_body="init";
-
-  var lv_cliqCert = process.env["CliqCert"];
-  try {
-      context.log('Pre work');
-      const html = await callCliqWS('https://microsoft.com')
-      context.log('SHOULD WORK:');
-      context.log(html);
-
-      
-      // try downloading an invalid url
-      const lv_body = await callCliqWSPost("http://test.com")
-      context.res = {
-          // status: 200, 
-          body: "HTML:" + html + lv_body
-      };
-//        context.bindings.outputQueueItem = "HTML:" ; // Also works with strings
-      var l_datetime = Date.now().toString();
-      context.log("l_datetime = " + l_datetime) ;
-      context.bindings.outputQueueItem = [
->>>>>>> 8633317ec30a1eedada17c975cb4121cc87f985a
           {
               "type":"sms",
               "number": "61433111696",
@@ -93,11 +68,7 @@ module.exports = async function (context, req) {
           }//,
           //"some string"
       ]
-<<<<<<< HEAD
 */
-=======
-
->>>>>>> 8633317ec30a1eedada17c975cb4121cc87f985a
       context.bindings.outputTblStatus = [
         {
           PartitionKey: "Status",
@@ -125,13 +96,8 @@ module.exports = async function (context, req) {
       }        
 */        
   } catch (error) {
-<<<<<<< HEAD
       context.log('ERROR:');
       context.log(error);
-=======
-      context.error('ERROR:');
-      context.error(error);
->>>>>>> 8633317ec30a1eedada17c975cb4121cc87f985a
       context.res = {
           status: 400,
           body: "Something bad happened!!"
@@ -139,10 +105,7 @@ module.exports = async function (context, req) {
   }
   context.log('Post Call.');
   context.done();        
-<<<<<<< HEAD
 return;
-=======
->>>>>>> 8633317ec30a1eedada17c975cb4121cc87f985a
 
 // wrap a request in an promise
 function callCliqWS(url) {  
@@ -168,7 +131,6 @@ function callCliqWS(url) {
 }
 
 // wrap a request in an promise
-<<<<<<< HEAD
 function callCliqWSPost(url) {  
   let envelope = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v2="http://cliq.shared.assaabloy.com/ws/query/v2/">' 
               + '<soapenv:Header/>'
@@ -191,13 +153,6 @@ function callCliqWSPost(url) {
 
   return new Promise((resolve, reject) => {
       request(options, (error, response, body) => {
-=======
-function callCliqWS(url) {  
-  return new Promise((resolve, reject) => {
-
-
-      request(url, (error, response, body) => {
->>>>>>> 8633317ec30a1eedada17c975cb4121cc87f985a
           if (error) reject(error);
           if (response.statusCode != 200) {
               reject('Invalid status code <' + response.statusCode + '>');
@@ -206,7 +161,6 @@ function callCliqWS(url) {
       });
   });
 }
-<<<<<<< HEAD
 
 
 function callCliqWSPost0(url) {  
@@ -264,9 +218,6 @@ context.log("In callCliqWSPost");
 
 
 
-=======
-
->>>>>>> 8633317ec30a1eedada17c975cb4121cc87f985a
 function getDate()
 {
 var today = new Date();
@@ -284,42 +235,4 @@ var today = dd + '/' + mm + '/' + yyyy;
 return today;
 } 
 
-<<<<<<< HEAD
-
-=======
-function callCliqWSPost(url) {  
-  var pfxFilePath = path.resolve(__dirname, 'ssl/2-000095399-WebService.pfx');
-  
-  var soapRqst_GetPersons = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v2="http://cliq.shared.assaabloy.com/ws/query/v2/">' 
-              + '<soapenv:Header/>'
-              + '<soapenv:Body><v2:getPersons/></soapenv:Body>'
-              + '</soapenv:Envelope>';
-
-  context.log("pfx:" + pfxFilePath);
-  
-  return new Promise((resolve, reject) => {
-    context.log('Pre PostCall');
-    request.post({
-      "headers": { 
-          "content-type": "Content-Type: text/xml;charset=UTF-8",
-          "soapAction":"http://cliq.shared.assaabloy.com/ws/query/v2/QueryService/getPersonsRequest"
-       },
-       agentOptions: {
-        pfx: fs.readFileSync(pfxFilePath),
-        passphrase: 'e/*hX5', //<= Get from keyvault
-        securityOptions: 'SSL_OP_NO_SSLv3'
-      },
-      "url": "https://abloycwm001.assaabloy.net:443/CLIQWebManager/ws/query/v2/", 
-      "body": soapRqst_GetPersons
-    }, (error, response, body) => {
-      if(error) {
-          return context.log(error);
-      }
-      resolve(body);
-      context.log(JSON.parse(body));
-    }); 
-    context.log('Post PostCall');
-  });
-}
->>>>>>> 8633317ec30a1eedada17c975cb4121cc87f985a
 };
