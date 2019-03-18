@@ -22,19 +22,18 @@ module.exports = async function (context, req) {
     expiring:0
   };
 
-  var lv_cliqCert = process.env["CliqCert"];
   try {
       context.log("Pre call");
-      const auditLog = await callCliqWSPost('https://abloycwm001.assaabloy.net/CLIQWebManager/ws/query/v2/');
-      context.log(auditLog);
+      const listUsers  = await callCliqWSPost('https://abloycwm001.assaabloy.net/CLIQWebManager/ws/query/v2/');
+      //context.log(listUsers );
 
       //Convert output to JSON
-      xml2js.parseString(auditLog, function (err, result) {
+      xml2js.parseString(listUsers , function (err, result) {
         if (err) { context.log(err)};
-        auditLogJSON = result;
+        listUsersJSON  = result;
       });
-      context.log(JSON.stringify(auditLogJSON));
-/* 
+      context.log(JSON.stringify(listUsersJSON ));
+ 
       //Should search for this rather than use indexes in case the schema changes
       const arrPersons = listUsersJSON["S:Envelope"]["S:Body"][0]["ns4:getPersonsResponse"][0]["person"];
       arrPersons.forEach(function(person) {
@@ -46,7 +45,7 @@ module.exports = async function (context, req) {
         
       });
 
-*/
+
       context.res = {
           // status: 200, 
           body: "Total:" + gCounts.total + "\nActive:" + gCounts.active
@@ -84,22 +83,18 @@ module.exports = async function (context, req) {
       context.bindings.outputTblStatus = [
         {
           PartitionKey: "Status",
-          RowKey: l_datetime + "-Start Audit Log",
+          RowKey: l_datetime + "-Start",
           status: "Started",
           run_date: getDate()
         },
         {
           PartitionKey: "Status",
-          RowKey: l_datetime + "-Finish Audit Log",
+          RowKey: l_datetime + "-Finish",
           status: "Finished",
           run_date: getDate()
         }
       ];
 
-  //cliq-siem
-  const auditOnlyJSON = auditLogJSON["S:Envelope"]["S:Body"][0]["ns4:getAuditTrailsResponse"][0]["auditTrails"];
-  context.bindings.outputBlob = {"auditTrails": auditOnlyJSON};
-  //XML => auditLog
 /*
       context.bindings.tableBinding = [];
       for (var i = 1; i < 10; i++) {
@@ -122,28 +117,6 @@ module.exports = async function (context, req) {
   context.done();        
 
 
-// wrap a request in an promise
-function callCliqWS(url) {  
-  var options = {     
-    method: 'GET',
-    url: url,
-    headers: { "content-type": "text/xml","charset":"UTF-8" },
-    agentOptions: {
-      pfx: mypfx,
-      passphrase: 'e/*hX5' //<= move to keyvault
-    }
-  };
-
-  return new Promise((resolve, reject) => {
-      request(options, (error, response, body) => {
-          if (error) reject(error);
-          if (response.statusCode != 200) {
-              reject('Invalid status code <' + response.statusCode + '>');
-          }
-          resolve(body);
-      });
-  });
-}
 
 // wrap a request in an promise
 function callCliqWSPost(url) {  

@@ -15,7 +15,7 @@ module.exports = async function (context, req) {
       
   
     var lv_body="init";
-    var pfxFilePath = path.resolve(__dirname, 'ssl/2-000095399-WebService.pfx');
+    var pfxFilePath = path.resolve(__dirname, '../ssl/2-000095399-WebService.pfx');
     var mypfx = fs.readFileSync(pfxFilePath);
     var auditLogJSON;
     var gCounts = {
@@ -24,10 +24,7 @@ module.exports = async function (context, req) {
       expiring:0
     };
   
-    var lv_cliqCert = process.env["CliqCert"];
     try {
-  //      const html = await callCliqWS('https://abloycwm001.assaabloy.net/CLIQWebManager/ws/query/v2/?wsdl');
-  //      const html = await callCliqWS('https://www.microsoft.com');
         context.log("Pre call");
         const auditLog = await callCliqWSPost('https://abloycwm001.assaabloy.net/CLIQWebManager/ws/query/v2/');
         context.log(auditLog);
@@ -88,18 +85,22 @@ module.exports = async function (context, req) {
         context.bindings.outputTblStatus = [
           {
             PartitionKey: "Status",
-            RowKey: l_datetime + "-Start",
+            RowKey: l_datetime + "-Start-Audit-Log",
             status: "Started",
             run_date: getDate()
           },
           {
             PartitionKey: "Status",
-            RowKey: l_datetime + "-Finish",
+            RowKey: l_datetime + "-Finish-Audit-Log",
             status: "Finished",
             run_date: getDate()
           }
         ];
   
+    //cliq-siem
+    const auditOnlyJSON = auditLogJSON["S:Envelope"]["S:Body"][0]["ns4:getAuditTrailsResponse"][0]["auditTrails"];
+    context.bindings.outputBlob = {"auditTrails": auditOnlyJSON};
+    //XML => auditLog
   
   /*
         context.bindings.tableBinding = [];
