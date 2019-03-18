@@ -13,9 +13,10 @@ module.exports = async function (context, req) {
     , path = require('path');
   var xml2js = require('xml2js');
       
-  var pfxFilePath = path.resolve(__dirname, '../../ssl/2-000095399-WebService.pfx');
+  var pfxFilePath = path.resolve(__dirname, '../ssl/2-000095399-WebService.pfx');
   var mypfx = fs.readFileSync(pfxFilePath);
-  var auditLogJSON;
+  var mypwd = GetEnvironmentVariable("cliqPassphrase");
+  var listUsersJSON;
   var gCounts = {
     total:0,
     active:0,
@@ -124,22 +125,7 @@ function callCliqWSPost(url) {
   let envelope = `
     <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v2="http://cliq.shared.assaabloy.com/ws/query/v2/">
      <soapenv:Header/>
-      <soapenv:Body>
-       <v2:getAuditTrails>
-           <importDateInterval>
-           <from>2018-04-01T00:00+08:00</from>
-           <!--Optional:-->
-           <to>2019-03-01T00:00+08:00</to>
-           <!--You may enter ANY elements at this point-->
-        </importDateInterval>
-        <!--Optional:-->
-        <pagination>
-           <firstResult>0</firstResult>
-           <maxResults>1000</maxResults>
-           <!--You may enter ANY elements at this point-->
-        </pagination>
-       </v2:getAuditTrails>
-      </soapenv:Body>
+     <soapenv:Body><v2:getPersons/></soapenv:Body>
     </soapenv:Envelope>`;
 
   
@@ -152,8 +138,8 @@ function callCliqWSPost(url) {
       "Connection": "Keep-Alive"
     },
     agentOptions: {
-      pfx: mypfx,
-      passphrase: 'e/*hX5' //<= move to keyvault
+      pfx: mypfx,      
+      passphrase: mypwd //'e/*hX5' //<= move to keyvault
     },
     body: envelope
   };
