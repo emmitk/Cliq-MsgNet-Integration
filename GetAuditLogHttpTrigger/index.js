@@ -17,7 +17,7 @@ module.exports = async function (context, req) {
     var lv_body="init";
     var pfxFilePath = path.resolve(__dirname, '../ssl/2-000095399-WebService.pfx');
     var mypfx = fs.readFileSync(pfxFilePath);
-    var mypwd = GetEnvironmentVariable("cliqPassphrase");
+    var mypwd =  process.env["cliqPassphrase"];
     var auditLogJSON;
     var gCounts = {
       total:0,
@@ -133,7 +133,7 @@ module.exports = async function (context, req) {
       headers: { "content-type": "text/xml","charset":"UTF-8" },
       agentOptions: {
         pfx: mypfx,
-        passphrase: 'e/*hX5' //<= move to keyvault
+        passphrase: mypwd //<= move to keyvault
       }
     };
   
@@ -183,7 +183,7 @@ module.exports = async function (context, req) {
       },
       agentOptions: {
         pfx: mypfx,
-        passphrase: 'e/*hX5' // mypwd <= move to keyvault
+        passphrase: mypwd
       },
       body: envelope
     };

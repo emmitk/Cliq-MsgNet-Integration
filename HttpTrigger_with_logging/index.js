@@ -12,10 +12,11 @@ module.exports = async function (context, req) {
   var fs = require('fs')
     , path = require('path');
   var xml2js = require('xml2js');
+  var error_occurred = false;
       
   var pfxFilePath = path.resolve(__dirname, '../ssl/2-000095399-WebService.pfx');
   var mypfx = fs.readFileSync(pfxFilePath);
-  var mypwd = GetEnvironmentVariable("cliqPassphrase");
+  var mypwd = process.env["cliqPassphrase"];
   var listUsersJSON;
   var gCounts = {
     total:0,
@@ -30,7 +31,7 @@ module.exports = async function (context, req) {
 
       //Convert output to JSON
       xml2js.parseString(listUsers , function (err, result) {
-        if (err) { context.log(err)};
+        if (err) { context.log(err); error_occurred = true };
         listUsersJSON  = result;
       });
       context.log(JSON.stringify(listUsersJSON ));
@@ -42,30 +43,22 @@ module.exports = async function (context, req) {
         if (person["deleted"] == "false") {
           gCounts.active++;
           context.log("Person:" + person["identity"] + "-" + person["firstName"] + " " + person["surname"]);
-        }  
-        
+        }          
       });
 
-
-      context.res = {
-          // status: 200, 
-          body: "Total:" + gCounts.total + "\nActive:" + gCounts.active
-      };
-
-/*
-      if (error free) {
+      if (!error_occurred) {
           context.res = {
               status: 200, //default
-              body: "Hello " + (req.query.name || req.body.name)
-          };
+              body: "Total:" + gCounts.total + "\nActive:" + gCounts.active
+            };
       }
       else {
           context.res = {
               status: 400,
-              body: "Please pass a name on the query string or in the request body"
+              body: "Some error occured in the webservice response!"
           };
       }
-*/            
+            
 
 //        context.bindings.outputQueueItem = "HTML:" ; // Also works with strings
       var l_datetime = Date.now().toString();
@@ -139,7 +132,7 @@ function callCliqWSPost(url) {
     },
     agentOptions: {
       pfx: mypfx,      
-      passphrase: mypwd //'e/*hX5' //<= move to keyvault
+      passphrase: mypwd 
     },
     body: envelope
   };
