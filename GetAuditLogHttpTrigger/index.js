@@ -12,6 +12,7 @@ module.exports = async function (context, req) {
     var fs = require('fs')
       , path = require('path');
     var xml2js = require('xml2js');
+    var error_occurred = false;
       
   
     var lv_body="init";
@@ -32,7 +33,7 @@ module.exports = async function (context, req) {
   
         //Convert output to JSON
         xml2js.parseString(auditLog, function (err, result) {
-          if (err) { context.log(err)};
+          if (err) { context.log(err); error_occurred = true };
           auditLogJSON = result;
         });
         context.log(JSON.stringify(auditLogJSON));
@@ -49,25 +50,20 @@ module.exports = async function (context, req) {
         });
   
   */
-        context.res = {
-            // status: 200, 
-            body: "Total:" + gCounts.total + "\nActive:" + gCounts.active
-        };
 
-/*
-        if (error free) {
-            context.res = {
-                status: 200, //default
-                body: "Hello " + (req.query.name || req.body.name)
+        if (!error_occurred) {
+          context.res = {
+              status: 200, //default
+              body: "Total:" + gCounts.total + "\nActive:" + gCounts.active
             };
-        }
-        else {
-            context.res = {
-                status: 400,
-                body: "Please pass a name on the query string or in the request body"
-            };
-        }
-*/            
+      }
+      else {
+          context.res = {
+              status: 400,
+              body: "Some error occured in the webservice response!"
+          };
+      }
+      
 
   //        context.bindings.outputQueueItem = "HTML:" ; // Also works with strings
         var l_datetime = Date.now().toString();

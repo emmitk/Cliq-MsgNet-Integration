@@ -26,7 +26,7 @@ module.exports = async function (context, req) {
 
   try {
       context.log("Pre call");
-      const listUsers  = await callCliqWSPost('https://abloycwm001.assaabloy.net/CLIQWebManager/ws/query/v2/');
+      const listUsers  = await cliq_getPersons_ws();
       //context.log(listUsers );
 
       //Convert output to JSON
@@ -43,6 +43,27 @@ module.exports = async function (context, req) {
         if (person["deleted"] == "false") {
           gCounts.active++;
           context.log("Person:" + person["identity"] + "-" + person["firstName"] + " " + person["surname"]);
+          let listUserKeys  = await cliq_getKeysForPerson_ws(person["identity"]);
+          context.log(listUserKeys);
+          //Convert output to JSON
+          xml2js.parseString(listUserKeys , function (err, result) {
+            if (err) { context.log(err); error_occurred = true };
+            listUserKeysJSON  = result;
+            let arrUserKeys = listUserKeysJSON["S:Envelope"]["S:Body"][0]["ns4:getKeysForPersonResponse"][0]["key"];
+/*
+<identity>811826fd-7533-4491-9cfc-79a83f5fb800</identity>
+            <type>TEMPORARY_KEY</type>
+            <name>CLIQ KEY</name>
+            <marking>DK/4</marking>
+            <deleted>true</deleted>
+
+*/            
+            arrUserKeys.forEach(function(key) {
+              if (key["deleted"] == "false") {
+                context.log("Key:" + key["identity"] + "-" + key["type"] + "-" + key["name"] + "-" + key["marking"]);
+              }
+            });
+          });
         }          
       });
 
@@ -113,8 +134,8 @@ module.exports = async function (context, req) {
 
 
 // wrap a request in an promise
-function callCliqWSPost(url) {  
-
+function cliq_getPersons_ws() {  
+  let url = 'https://abloycwm001.assaabloy.net/CLIQWebManager/ws/query/v2/';
   let envelope = `
     <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v2="http://cliq.shared.assaabloy.com/ws/query/v2/">
      <soapenv:Header/>
@@ -148,6 +169,46 @@ function callCliqWSPost(url) {
   });
 }
  
+// wrap a request in an promise
+function cliq_getKeysForPerson_ws(i_key) {  
+  let url = 'https://abloycwm001.assaabloy.net/CLIQWebManager/ws/query/v2/';
+  let envelope = `
+  <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v2="http://cliq.shared.assaabloy.com/ws/query/v2/">
+    <soapenv:Header/>
+    <soapenv:Body>
+     <v2:getKeysForPerson>
+        <!--Optional:-->
+        <personIdentity>` + i_key + `</personIdentity>
+     </v2:getKeysForPerson>
+    </soapenv:Body>
+  </soapenv:Envelope>`;
+
+  
+  var options = {     
+    method: 'POST',
+    url: url,
+    headers: { "content-type": "text/xml;charset=UTF-8",
+      "SOAPAction": url,
+      "Accept-Encoding": "gzip,deflate",
+      "Connection": "Keep-Alive"
+    },
+    agentOptions: {
+      pfx: mypfx,      
+      passphrase: mypwd 
+    },
+    body: envelope
+  };
+
+  return new Promise((resolve, reject) => {
+      request(options, (error, response, body) => {
+          if (error) reject(error);
+          if (response.statusCode != 200) {
+              reject('Invalid status code <' + response.statusCode + '>');
+          }
+          resolve(body);
+      });
+  });
+}
 
 function getDate()
 {
