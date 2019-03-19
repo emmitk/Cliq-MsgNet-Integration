@@ -18,11 +18,17 @@ module.exports = async function (context, req) {
   var mypfx = fs.readFileSync(pfxFilePath);
   var mypwd = process.env["cliqPassphrase"];
   var listUsersJSON;
+  var listUserKeysJSON;
+  var keyDetailsJSON;
   var gCounts = {
     total:0,
     active:0,
     expiring:0
   };
+  var arrMessages = [];
+
+  var l_datetime = Date.now().toString();
+  context.log("l_datetime = " + l_datetime) ;
 
   try {
       context.log("Pre call");
@@ -34,38 +40,66 @@ module.exports = async function (context, req) {
         if (err) { context.log(err); error_occurred = true };
         listUsersJSON  = result;
       });
-      context.log(JSON.stringify(listUsersJSON ));
- 
+      //context.log(JSON.stringify(listUsersJSON ));
+   } catch (error) {
+      error_occurred = true;
+      context.log(error);
+   }
+
+  try {
       //Should search for this rather than use indexes in case the schema changes
       const arrPersons = listUsersJSON["S:Envelope"]["S:Body"][0]["ns4:getPersonsResponse"][0]["person"];
-      arrPersons.forEach(function(person) {
+//      context.log(listUserKeys);
+    
+    for ( i=0; i< arrPersons.length; i++) {
+      person = arrPersons[i];
         gCounts.total++;
         if (person["deleted"] == "false") {
           gCounts.active++;
-          context.log("Person:" + person["identity"] + "-" + person["firstName"] + " " + person["surname"]);
+          context.log("Person:" + person["identity"] + "-" + person["firstName"] + " " + person["surname"]);          
           let listUserKeys  = await cliq_getKeysForPerson_ws(person["identity"]);
-          context.log(listUserKeys);
+
+          //context.log(listUserKeys);
           //Convert output to JSON
+
           xml2js.parseString(listUserKeys , function (err, result) {
             if (err) { context.log(err); error_occurred = true };
             listUserKeysJSON  = result;
-            let arrUserKeys = listUserKeysJSON["S:Envelope"]["S:Body"][0]["ns4:getKeysForPersonResponse"][0]["key"];
-/*
-<identity>811826fd-7533-4491-9cfc-79a83f5fb800</identity>
-            <type>TEMPORARY_KEY</type>
-            <name>CLIQ KEY</name>
-            <marking>DK/4</marking>
-            <deleted>true</deleted>
-
-*/            
-            arrUserKeys.forEach(function(key) {
-              if (key["deleted"] == "false") {
-                context.log("Key:" + key["identity"] + "-" + key["type"] + "-" + key["name"] + "-" + key["marking"]);
-              }
-            });
           });
+
+            let arrUserKeys = listUserKeysJSON["S:Envelope"]["S:Body"][0]["ns4:getKeysForPersonResponse"];         
+            
+            if (listUserKeysJSON["S:Envelope"]["S:Body"][0]["ns4:getKeysForPersonResponse"][0]["key"] !== undefined) { //ignore where user has no keys
+              arrUserKeys = arrUserKeys[0]["key"];
+              for (j=0; j<arrUserKeys.length; j++) {
+                key = arrUserKeys[j];
+
+                if (key["deleted"] == "false") {
+                  context.log("Key:" + key["identity"] + "-" + key["type"] + "-" + key["name"] + "-" + key["marking"]);
+                  let keyDetails  = await cliq_getKeyDetails_ws(key["identity"]);
+//                  context.log(keyDetails);
+                  xml2js.parseString(keyDetails , function (err, result) {
+                    if (err) { context.log(err); error_occurred = true };
+                    keyDetailsJSON  = result;
+                  });
+//                  context.log(keyDetailsJSON["S:Envelope"]["S:Body"][0]["ns4:getKeyDetailsResponse"][0]["keyDetails"][0]["operationalStatus"]);
+                  let arrKeyDetails = keyDetailsJSON["S:Envelope"]["S:Body"][0]["ns4:getKeyDetailsResponse"][0]["keyDetails"];
+                  context.log("Operational Status:" + arrKeyDetails[0]["operationalStatus"] + " |  Last remote Update:" + arrKeyDetails[0]["lastRemoteUpdate"]);
+                  let msgDigest = {
+                    "type":"sms",
+                    "number": "61433111696",
+                    "sender": "Emmit",
+                    "subject": "Subject heading",
+                    "msg": "Test Message from Azure at" + l_datetime + " for " + person["firstName"] + " " + person["surname"]
+                  };
+                  
+                  arrMessages.push(msgDigest);
+                }
+              }
+            }        
         }          
-      });
+      //});
+    }
 
       if (!error_occurred) {
           context.res = {
@@ -80,10 +114,8 @@ module.exports = async function (context, req) {
           };
       }
             
-
+      context.bindings.outputQueueItem = arrMessages;
 //        context.bindings.outputQueueItem = "HTML:" ; // Also works with strings
-      var l_datetime = Date.now().toString();
-      context.log("l_datetime = " + l_datetime) ;
 /*      context.bindings.outputQueueItem = [
           {
               "type":"sms",
@@ -170,7 +202,7 @@ function cliq_getPersons_ws() {
 }
  
 // wrap a request in an promise
-function cliq_getKeysForPerson_ws(i_key) {  
+function cliq_getKeysForPerson_ws(i_person) {  
   let url = 'https://abloycwm001.assaabloy.net/CLIQWebManager/ws/query/v2/';
   let envelope = `
   <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v2="http://cliq.shared.assaabloy.com/ws/query/v2/">
@@ -178,12 +210,54 @@ function cliq_getKeysForPerson_ws(i_key) {
     <soapenv:Body>
      <v2:getKeysForPerson>
         <!--Optional:-->
-        <personIdentity>` + i_key + `</personIdentity>
+        <personIdentity>` + i_person + `</personIdentity>
      </v2:getKeysForPerson>
     </soapenv:Body>
   </soapenv:Envelope>`;
 
-  
+  //context.log("\nEnvelope=" + envelope);
+  var options = {     
+    method: 'POST',
+    url: url,
+    headers: { "content-type": "text/xml;charset=UTF-8",
+      "SOAPAction": url,
+      "Accept-Encoding": "gzip,deflate",
+      "Connection": "Keep-Alive"
+    },
+    agentOptions: {
+      pfx: mypfx,      
+      passphrase: mypwd 
+    },
+    body: envelope
+  };
+
+  return new Promise((resolve, reject) => {
+      request(options, (error, response, body) => {
+          if (error) reject(error);
+          if (response.statusCode != 200) {
+              reject('Invalid status code <' + response.statusCode + '>');
+          }
+          resolve(body);
+      });
+  });
+}
+
+// wrap a request in an promise
+function cliq_getKeyDetails_ws(i_key) {  
+  let url = 'https://abloycwm001.assaabloy.net/CLIQWebManager/ws/query/v2/';
+  let envelope = `
+   <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v2="http://cliq.shared.assaabloy.com/ws/query/v2/">
+    <soapenv:Header/>
+    <soapenv:Body>
+      <v2:getKeyDetails>
+         <!--Optional:-->
+         <keyIdentity>` + i_key + `</keyIdentity>
+      </v2:getKeyDetails>
+    </soapenv:Body>
+   </soapenv:Envelope>`;
+
+
+  //context.log("\nEnvelope=" + envelope);
   var options = {     
     method: 'POST',
     url: url,
@@ -226,6 +300,9 @@ if (mm < 10) {
 var today = dd + '/' + mm + '/' + yyyy;
 return today;
 } 
+
+
+
 
 
 };
