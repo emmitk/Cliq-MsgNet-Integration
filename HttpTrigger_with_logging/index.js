@@ -122,21 +122,21 @@ module.exports = async function (context, req) {
           PartitionKey: "ExpiryCheck",
           RowKey: l_datetime + "-Start",
           status: "Started",
-          message: "Start Time:" + l_datetime,
+          Message: "Start Time:" + l_datetime,
           run_date: getDate()
         },
         {
           PartitionKey: "ExpiryCheck",
           RowKey: l_datetime + "-Count",
           status: 'Count',
-          message: "Total People:" + gCounts.total + " Active People:" + gCounts.active + " Expiring Keys:" + gCounts.expiring,
+          Message: "Total People:" + gCounts.total + " Active People:" + gCounts.active + " Expiring Keys:" + gCounts.expiring,
           run_date: getDate()
         },        
         {
           PartitionKey: "ExpiryCheck",
           RowKey: l_datetime + "-Finished",
           status: "Finished",
-          message: "Finish Time:" + l_datetime_end,
+          Message: "Finish Time:" + l_datetime_end,
           run_date: getDate()
         }
       ];

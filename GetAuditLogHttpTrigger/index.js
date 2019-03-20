@@ -81,13 +81,13 @@ module.exports = async function (context, req) {
   */
         context.bindings.outputTblStatus = [
           {
-            PartitionKey: "Status",
+            PartitionKey: "AuditLog",
             RowKey: l_datetime + "-Start-Audit-Log",
             status: "Started",
             run_date: getDate()
           },
           {
-            PartitionKey: "Status",
+            PartitionKey: "AuditLog",
             RowKey: l_datetime + "-Finish-Audit-Log",
             status: "Finished",
             run_date: getDate()
