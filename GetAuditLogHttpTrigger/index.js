@@ -68,29 +68,18 @@ module.exports = async function (context, req) {
   //        context.bindings.outputQueueItem = "HTML:" ; // Also works with strings
         var l_datetime = Date.now().toString();
         context.log("l_datetime = " + l_datetime) ;
-  /*      context.bindings.outputQueueItem = [
-            {
-                "type":"sms",
-                "number": "61433111696",
-                "sender": "Emmit",
-                "subject": "Subject heading",
-                "msg": "Test Message from Azure " + l_datetime
-            }//,
-            //"some string"
-        ]
-  */
         context.bindings.outputTblStatus = [
           {
             PartitionKey: "AuditLog",
             RowKey: l_datetime + "-Start-Audit-Log",
-            Status: "Started",
-            RunDate: getDate()
+            MessageStatus: "Started",
+            MessageDate: getDate()
           },
           {
             PartitionKey: "AuditLog",
             RowKey: l_datetime + "-Finish-Audit-Log",
-            Status: "Finished",
-            RunDate: getDate()
+            MessageStatus: "Finished",
+            MessageDate: getDate()
           }
         ];
   
