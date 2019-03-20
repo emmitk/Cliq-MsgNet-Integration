@@ -115,11 +115,14 @@ module.exports = async function (context, req) {
             
       context.bindings.outputQueueItem = arrMessages;
 
+      var l_datetime_end = Date.now().toString();
+
       context.bindings.outputTblStatus = [
         {
           PartitionKey: "ExpiryCheck",
-          RowKey: l_datetime,
+          RowKey: l_datetime + "-Start",
           status: "Started",
+          message: "Start Time:" + l_datetime,
           run_date: getDate()
         },
         {
@@ -131,8 +134,9 @@ module.exports = async function (context, req) {
         },        
         {
           PartitionKey: "ExpiryCheck",
-          RowKey: l_datetime,
+          RowKey: l_datetime + "-Finished",
           status: "Finished",
+          message: "Finish Time:" + l_datetime_end,
           run_date: getDate()
         }
       ];
