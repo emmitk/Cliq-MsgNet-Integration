@@ -129,7 +129,7 @@ module.exports = async function (context, req) {
           PartitionKey: "ExpiryCheck",
           RowKey: l_datetime + "-Count",
           status: 'Count',
-          message: "Total:" + gCounts.total + " Active:" + gCounts.active + " Expiring:" + gCounts.expiring,
+          message: "Total People:" + gCounts.total + " Active People:" + gCounts.active + " Expiring Keys:" + gCounts.expiring,
           run_date: getDate()
         },        
         {
