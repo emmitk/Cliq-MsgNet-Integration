@@ -92,13 +92,13 @@ module.exports = async function (context, req) {
                     "subject": "Subject heading",
                     "msg": "Test Message from Azure at" + l_datetime + " for " + person["firstName"] + " " + person["surname"]
                   };
-                  gCounts.expiring = msgDigest.length;
                   arrMessages.push(msgDigest);
                 }
               }
             }        
         }          
     }
+      gCounts.expiring = arrMessages.length;
 
       if (!error_occurred) {
           context.res = {
@@ -118,19 +118,20 @@ module.exports = async function (context, req) {
       context.bindings.outputTblStatus = [
         {
           PartitionKey: "ExpiryCheck",
-          RowKey: l_datetime + "-Start",
+          RowKey: l_datetime,
           status: "Started",
           run_date: getDate()
         },
         {
           PartitionKey: "ExpiryCheck",
           RowKey: l_datetime + "-Count",
-          status: "Total:" + gCounts.total + "\nActive:" + gCounts.active + "\nExpiring:" + gCounts.expiring,
+          status: 'Count',
+          message: "Total:" + gCounts.total + " Active:" + gCounts.active + " Expiring:" + gCounts.expiring,
           run_date: getDate()
         },        
         {
-          PartitionKey: "Status",
-          RowKey: l_datetime + "-Finish",
+          PartitionKey: "ExpiryCheck",
+          RowKey: l_datetime,
           status: "Finished",
           run_date: getDate()
         }
