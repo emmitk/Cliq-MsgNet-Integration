@@ -83,14 +83,14 @@ module.exports = async function (context, req) {
           {
             PartitionKey: "AuditLog",
             RowKey: l_datetime + "-Start-Audit-Log",
-            status: "Started",
-            run_date: getDate()
+            Status: "Started",
+            RunDate: getDate()
           },
           {
             PartitionKey: "AuditLog",
             RowKey: l_datetime + "-Finish-Audit-Log",
-            status: "Finished",
-            run_date: getDate()
+            Status: "Finished",
+            RunDate: getDate()
           }
         ];
   
